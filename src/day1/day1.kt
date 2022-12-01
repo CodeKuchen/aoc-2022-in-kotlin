@@ -1,27 +1,30 @@
-package day02
+package day1
 
 import inputTextOfDay
 import testTextOfDay
 
-fun parseInput(input: String): List<String> {
-    return input.lines()
+fun parseInput(input: String): List<List<Int>> {
+    return input.split("\r\n\r\n").map { elf -> elf.lines().map { it.toInt() } }
 }
 
 fun part1(input: String): Int {
     val data = parseInput(input)
-    return 0
+    return data.maxOf { it.sum() }
 }
 
 fun part2(input: String): Int {
     val data = parseInput(input)
-    return 0
+    return data.map { it.sum() }
+        .sortedDescending()
+        .take(3)
+        .sum()
 }
 
 fun main() {
-    val day = 2
+    val day = 1
 
     val testInput = testTextOfDay(day)
-    check(part1(testInput) == 0)
+    check(part1(testInput) == 24000)
 
     val input = inputTextOfDay(day)
 
