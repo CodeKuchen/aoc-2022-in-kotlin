@@ -6,74 +6,63 @@ import inputTextOfDay
 import testTextOfDay
 
 enum class Hand(val value: Int) {
-    Rock(1),
-    Paper(2),
-    Scissors(3)
+    Rock(1), Paper(2), Scissors(3)
 }
 
 enum class Outcome(val value: Int) {
-    Loose(0),
-    Draw(3),
-    Win(6)
+    Loose(0), Draw(3), Win(6)
+}
+
+fun part1(text: String): Int {
+    return text.lines().sumOf { evaluate(toHand(it[0]), toHand(it[2])) }
+}
+
+fun part2(text: String): Int {
+    return text.lines().sumOf { evaluate(toHand(it[0]), toOutcome(it[2])) }
 }
 
 fun evaluate(elf: Hand, me: Hand): Int {
-    return when (me) {
-        Rock -> Rock + when (elf) {
+    return when (elf) {
+        Rock -> me + when (me) {
             Rock -> Draw
-            Paper -> Loose
+            Paper -> Win
+            Scissors -> Loose
+        }
+
+        Paper -> me + when (me) {
+            Rock -> Loose
+            Paper -> Draw
             Scissors -> Win
         }
 
-        Paper -> Paper + when (elf) {
+        Scissors -> me + when (me) {
             Rock -> Win
-            Paper -> Draw
-            Scissors -> Loose
-
-        }
-
-        Scissors -> Scissors + when (elf) {
-            Rock -> Loose
-            Paper -> Win
+            Paper -> Loose
             Scissors -> Draw
-
         }
     }
 }
 
 fun evaluate(elf: Hand, outcome: Outcome): Int {
-    return when (outcome) {
-        Loose -> {
-            Loose + when (elf) {
-                Rock -> Scissors
-                Paper -> Rock
-                Scissors -> Paper
-            }
+    return when (elf) {
+        Rock -> outcome + when (outcome) {
+            Loose -> Scissors
+            Win -> Paper
+            Draw -> Rock
         }
 
-        Draw -> {
-            Draw + when (elf) {
-                Rock -> Rock
-                Paper -> Paper
-                Scissors -> Scissors
-            }
+        Paper -> outcome + when (outcome) {
+            Loose -> Rock
+            Win -> Scissors
+            Draw -> Paper
         }
 
-        Win -> {
-            Win + when (elf) {
-                Rock -> Paper
-                Paper -> Scissors
-                Scissors -> Rock
-            }
+        Scissors -> outcome + when (outcome) {
+            Loose -> Paper
+            Win -> Rock
+            Draw -> Scissors
         }
     }
-}
-
-private operator fun Hand.plus(outcome: Outcome): Int = this.value + outcome.value
-private operator fun Outcome.plus(hand: Hand): Int = this.value + hand.value
-
-fun part1(text: String): Int {
-    return text.lines().sumOf { evaluate(toHand(it[0]), toHand(it[2])) }
 }
 
 fun toHand(hand: Char): Hand = when (hand) {
@@ -88,9 +77,8 @@ fun toOutcome(result: Char): Outcome = when (result) {
     else -> Win
 }
 
-fun part2(text: String): Int {
-    return text.lines().sumOf { evaluate(toHand(it[0]), toOutcome(it[2])) }
-}
+private operator fun Hand.plus(outcome: Outcome): Int = this.value + outcome.value
+private operator fun Outcome.plus(hand: Hand): Int = this.value + hand.value
 
 fun main() {
     val day = 2
