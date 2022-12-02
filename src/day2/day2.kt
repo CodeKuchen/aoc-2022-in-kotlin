@@ -21,47 +21,43 @@ fun part2(text: String): Int {
     return text.lines().sumOf { evaluate(toHand(it[0]), toOutcome(it[2])) }
 }
 
-fun evaluate(elf: Hand, me: Hand): Int {
-    return when (elf) {
-        Rock -> me + when (me) {
-            Rock -> Draw
-            Paper -> Win
-            Scissors -> Loose
-        }
+fun evaluate(elf: Hand, me: Hand): Int = when (elf) {
+    Rock -> me + when (me) {
+        Rock -> Draw
+        Paper -> Win
+        Scissors -> Loose
+    }
 
-        Paper -> me + when (me) {
-            Rock -> Loose
-            Paper -> Draw
-            Scissors -> Win
-        }
+    Paper -> me + when (me) {
+        Rock -> Loose
+        Paper -> Draw
+        Scissors -> Win
+    }
 
-        Scissors -> me + when (me) {
-            Rock -> Win
-            Paper -> Loose
-            Scissors -> Draw
-        }
+    Scissors -> me + when (me) {
+        Rock -> Win
+        Paper -> Loose
+        Scissors -> Draw
     }
 }
 
-fun evaluate(elf: Hand, outcome: Outcome): Int {
-    return when (elf) {
-        Rock -> outcome + when (outcome) {
-            Loose -> Scissors
-            Draw -> Rock
-            Win -> Paper
-        }
+fun evaluate(elf: Hand, outcome: Outcome): Int = when (elf) {
+    Rock -> outcome + when (outcome) {
+        Loose -> Scissors
+        Draw -> Rock
+        Win -> Paper
+    }
 
-        Paper -> outcome + when (outcome) {
-            Loose -> Rock
-            Draw -> Paper
-            Win -> Scissors
-        }
+    Paper -> outcome + when (outcome) {
+        Loose -> Rock
+        Draw -> Paper
+        Win -> Scissors
+    }
 
-        Scissors -> outcome + when (outcome) {
-            Loose -> Paper
-            Win -> Rock
-            Draw -> Scissors
-        }
+    Scissors -> outcome + when (outcome) {
+        Loose -> Paper
+        Win -> Rock
+        Draw -> Scissors
     }
 }
 
