@@ -47,14 +47,14 @@ fun evaluate(elf: Hand, outcome: Outcome): Int {
     return when (elf) {
         Rock -> outcome + when (outcome) {
             Loose -> Scissors
-            Win -> Paper
             Draw -> Rock
+            Win -> Paper
         }
 
         Paper -> outcome + when (outcome) {
             Loose -> Rock
-            Win -> Scissors
             Draw -> Paper
+            Win -> Scissors
         }
 
         Scissors -> outcome + when (outcome) {
