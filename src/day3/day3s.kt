@@ -6,18 +6,19 @@ import testTextOfDay
 private val Char.priority: Int
     get() = when (this) {
         in 'a'..'z' -> this - 'a' + 1
-        else -> this - 'A' + 27
+        in 'A'..'Z' -> this - 'A' + 27
+        else -> error("$this is unknown, check your input!")
     }
 
 fun part1s(text: String): Int =
     text.lines()
-        .map { it.chunked(it.length / 2) { bag -> bag.toSet()} }
+        .map { bag -> bag.chunked(bag.length / 2) { half -> half.toSet()} }
         .map { (a, b) -> (a intersect b).single() }
         .sumOf { it.priority }
 
 fun part2s(text: String): Int =
     text.lines()
-        .chunked(3) { it.map { elf -> elf.toSet()} }
+        .chunked(3) { elves -> elves.map { elf -> elf.toSet()} }
         .map { (a, b, c) -> (a intersect b intersect c).single() }
         .sumOf { it.priority }
 
