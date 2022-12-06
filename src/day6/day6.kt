@@ -3,23 +3,19 @@ package day6
 import inputTextOfDay
 import testTextOfDay
 
-fun parseInput(input: String): List<String> {
-    return input.lines()
+fun part1(input: String): Int {
+    return findStartOfMarker(input, 4)
 }
 
-fun part1(text: String): Int {
-    return findMarker(text, 4)
+fun part2(input: String): Int {
+    return findStartOfMarker(input, 14)
 }
 
-fun part2(text: String): Int {
-    return findMarker(text, 14)
-}
-
-private fun findMarker(text: String, length: Int): Int {
-    val similarityCount = text.windowed(length)
-        .mapIndexed { index, string -> index to (string.toSet().size == length) }
-        .filter { (i, check) -> check }
-    return similarityCount.first().first+length
+private fun findStartOfMarker(input: String, length: Int): Int {
+    return input
+        .windowed(length)
+        .map { it.toSet().size == length }
+        .indexOfFirst { it } + length
 }
 
 fun main() {
