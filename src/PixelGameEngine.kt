@@ -40,6 +40,14 @@ abstract class PixelGameEngine {
             if (xL in 0 until screenWidth)
                 repaint(xL * pixelWidth, yL * pixelHeight, (xH - xL + 1) * pixelWidth, (yH - yL + 1) * pixelHeight)
         }
+        fun drawString(text: String, color: Color, x: Int, y: Int, offsetX: Int, offsetY: Int) {
+            with(this.graphics) {
+                val prevColor = getColor()
+                setColor(color)
+                drawString(text, x * pixelWidth + offsetX, y * pixelHeight + offsetY)
+                setColor(prevColor)
+            }
+        }
 
         override fun paint(g: Graphics) {
             super.paint(g)
@@ -203,6 +211,11 @@ abstract class PixelGameEngine {
             if (dirtyYLow > y) dirtyYLow = y
             if (dirtyYHigh < y) dirtyYHigh = y
         }
+    }
+
+    fun drawString(text: String, color: Color, x: Int, y: Int, offsetX: Int = 0, offsetY: Int = 0)
+    {
+        panel.drawString(text, color, x, y, offsetX, offsetY)
     }
 
     /**
