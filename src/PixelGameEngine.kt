@@ -49,6 +49,10 @@ abstract class PixelGameEngine {
             }
         }
 
+        fun drawPanel(jp: JPanel) {
+            this.graphics
+        }
+
         override fun paint(g: Graphics) {
             super.paint(g)
             val stableCopy = displayBuffer.copyOf()
@@ -216,6 +220,10 @@ abstract class PixelGameEngine {
     fun drawString(text: String, color: Color, x: Int, y: Int, offsetX: Int = 0, offsetY: Int = 0)
     {
         panel.drawString(text, color, x, y, offsetX, offsetY)
+    }
+    fun drawPanel(jp: JPanel)
+    {
+        panel.drawPanel(jp)
     }
 
     /**

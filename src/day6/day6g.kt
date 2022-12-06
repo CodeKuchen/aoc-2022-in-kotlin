@@ -11,32 +11,31 @@ class Day6g : PixelGameEngine() {
     val input = inputTextOfDay(day)
     private val length = 4
 
-    private val width = 51
+    private val width = 61
     private val height = 3
     private val pixelWidth = 20
     private val pixelHeight = 20
 
-    val windows = input.windowed(4).map { it.toSet().size == 4 }
+    private var step = 0
 
-    var step = 0
-
-    val colors = "abcdefghijklmnopqrstuvwxyz".map { it to Color(Random.nextInt(0, 255), Random.nextInt(0, 255), Random.nextInt(0, 255)) }
+    private val colors = "abcdefghijklmnopqrstuvwxyz".map { it to Color(Random.nextInt(0, 255), Random.nextInt(0, 255), Random.nextInt(0, 255)) }
 
     override fun onCreate() {
         construct(width, height, pixelWidth, pixelHeight, "AoC 2022 Day $day")
-        limitFps = 1000
+        limitFps = 100
     }
 
     override fun onUpdate(elapsedTime: Long, frame: Long) {
         appInfo = "step #${frame}"
 
-        val scannerValue = input.drop(step+10).take(4).toSet().size
+        val scannerValue = input.drop(step+10).take(length).toSet().size
 
         input.drop(step).take(40).forEachIndexed { index, c ->
             val color = colors.first { (char, _) -> char == c }.second
             draw(index + index + 1, height - 2, color)
             drawString(c.toString(), Color.GREEN, index + index + 1, height - 1, pixelHeight/3, -pixelWidth/3)
         }
+
         // draw scanner
         draw(20, height - 1, Color.RED)
         draw(20, height - 2, Color.RED)
@@ -51,9 +50,6 @@ class Day6g : PixelGameEngine() {
             drawString(scannerValue.toString(), Color.RED, 12*2, height - 2, pixelHeight/3, - pixelWidth/3)
             drawString((step+10+length).toString(), Color.RED, 12*2, height - 0, pixelHeight/3, - pixelWidth/3)
         }
-        // draw result
-        // draw(12*2, height - 3, Color.WHITE)
-        //
     }
 }
 
