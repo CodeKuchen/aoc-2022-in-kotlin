@@ -3,38 +3,15 @@ package day7
 import inputTextOfDay
 import testTextOfDay
 
-var path = mutableListOf<String>()
-var dirSizes = mutableMapOf("/" to 0L)
-
-fun scanDirectory(input: String) {
-    path = mutableListOf()
-    dirSizes = mutableMapOf("/" to 0L)
-
-    input.lines().forEach {
-        val command = it.split(" ")
-        when (command[0]) {
-            "$" -> when(command[1]) {
-                "cd" -> when (command[2]) {
-                    ".." -> path.removeLast()
-                    else -> path.add(command[2])
-                }
-            }
-            "dir" -> dirSizes[path.joinToString("")+command[1]] = 0L
-            else -> path.forEachIndexed { index, segment ->
-                val currentPath = path.take(index+1).joinToString("")
-                dirSizes[currentPath] = dirSizes[currentPath]!!.toLong() + command[0].toLong()
-            }
-        }
-    }
-}
 fun part1(input: String): Long {
-    scanDirectory(input)
-
-    return dirSizes.toList().filter{(_, size) -> size <= 100_000 }.sumOf { (_, size) -> size }
+    return scanDirectorySizes(input)
+        .toList()
+        .filter { (_, size) -> size <= 100_000 }
+        .sumOf { (_, size) -> size }
 }
 
 fun part2(input: String): Long {
-    scanDirectory(input)
+    val dirSizes = scanDirectorySizes(input)
 
     val total = 70_000_000L
     val required = 30_000_000L
@@ -42,7 +19,32 @@ fun part2(input: String): Long {
     val freeSpace = total - used
     val additional = required - freeSpace
 
-    return dirSizes.filter { (_, size) -> size > additional }.minOf { (_, size) -> size }
+    return dirSizes
+        .filter { (_, size) -> size > additional }
+        .minOf { (_, size) -> size }
+}
+
+fun scanDirectorySizes(input: String): MutableMap<String, Long> {
+    val path = mutableListOf<String>()
+    val dirSizes = mutableMapOf("/" to 0L)
+
+    input.lines().forEach {
+        val command = it.split(" ")
+        when (command[0]) {
+            "$" -> when (command[1]) {
+                "cd" -> when (command[2]) {
+                    ".." -> path.removeLast()
+                    else -> path.add(command[2])
+                }
+            }
+            "dir" -> dirSizes[path.joinToString("") + command[1]] = 0L
+            else -> path.forEachIndexed { index, _ ->
+                val currentPath = path.take(index + 1).joinToString("")
+                dirSizes[currentPath] = dirSizes[currentPath]!!.toLong() + command[0].toLong()
+            }
+        }
+    }
+    return dirSizes
 }
 
 fun main() {
