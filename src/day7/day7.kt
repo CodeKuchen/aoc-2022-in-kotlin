@@ -27,7 +27,7 @@ fun part2(input: String): Int {
 
 fun scanDirectorySizes(input: String): List<Int> {
     val path = mutableListOf<String>()
-    val dirSizes = mutableMapOf("/" to 0)
+    val dirSizes = mutableMapOf<String, Int>()
 
     input.lines().forEach {
         val command = it.split(" ")
