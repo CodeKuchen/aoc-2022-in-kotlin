@@ -3,8 +3,8 @@ package day8
 import inputTextOfDay
 import testTextOfDay
 
-var heights = mutableListOf<MutableList<Int>>()
-var visibility = mutableListOf<MutableList<Boolean>>()
+val heights = mutableListOf<MutableList<Int>>()
+val visibility = mutableListOf<MutableList<Boolean>>()
 val scenicScore = mutableListOf<MutableList<Int>>()
 
 fun parseInput(text: String) {
@@ -24,7 +24,7 @@ fun part1(text: String): Int {
     parseInput(text)
 
     visibility.forEachIndexed { r, row ->
-        row.forEachIndexed { c, _ ->
+        row.indices.forEach{ c ->
             visibility[r][c] = isVisible(r, c, heights)
         }
     }
@@ -45,7 +45,7 @@ fun isVisible(row: Int, col: Int, heights: List<List<Int>>): Boolean {
     val bottom = heights.map { line -> line[col] }.drop(row + 1)
 
     // visible if all trees in at least one direction are smaller
-    return listOf(right, left, top, bottom).minOf { it.max() } < heights[row][col]
+    return listOf(right, left, top, bottom).any { it.max() < heights[row][col] }
 }
 
 fun part2(text: String): Int {

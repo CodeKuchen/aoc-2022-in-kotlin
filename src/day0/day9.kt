@@ -8,12 +8,10 @@ fun parseInput(input: String): List<String> {
 }
 
 fun part1(text: String): Int {
-    val lines = parseInput(text)
     return 0
 }
 
 fun part2(text: String): Int {
-    val lines = parseInput(text)
     return 0
 }
 
