@@ -4,7 +4,7 @@ import inputTextOfDay
 import testTextOfDay
 import kotlin.math.abs
 
-fun parseInput(input: String): List<Motion> {
+fun parseInput(input: String): List<Pair<Direction, Int>> {
     return input.lines().map { it[0].toDirection() to it.substringAfter(" ").toInt() }
 }
 
@@ -79,10 +79,8 @@ fun main() {
 }
 
 
-private typealias Steps = Int
 private typealias Point = Pair<Int, Int>
 private typealias Direction = Point
-private typealias Motion = Pair<Direction, Steps>
 
 private var <E> MutableList<E>.head: E
     get() = first()
