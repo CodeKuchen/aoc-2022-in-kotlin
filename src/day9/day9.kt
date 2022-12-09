@@ -4,58 +4,43 @@ import inputTextOfDay
 import testTextOfDay
 import kotlin.math.abs
 
-fun parseInput(input: String): List<Pair<Direction, Distance>> =
-    input.lines().map { it[0].toDirection() to it.substringAfter(" ").toInt() }
+fun parseInput(input: String): List<Pair<Direction, Int>> =
+    input.lines().map { line ->
+        line.split(" ").let { (d, n) -> Direction.valueOf(d) to n.toInt() }
+    }
 
 fun part1(input: String) = visit(2, input).size
 fun part2(input: String) = visit(10, input).size
 
-fun visit(ropeSize: Int, input: String): MutableSet<Point> {
+fun visit(ropeSize: Int, input: String): MutableSet<Pos> {
 
     val motions = parseInput(input)
-    val rope = (1..ropeSize).map { ORIGIN }.toMutableList()
 
-    val visited = mutableSetOf<Point>()
+    val knots = MutableList(ropeSize) { Pos(0,0) }
+    val visited = mutableSetOf(knots.last())
 
-    motions.forEach { (dir, dist) ->
-        repeat(dist) {
-            rope.head += dir
-            (1 until rope.size).forEach { tail ->
-                if (tooFar(rope[tail], rope[tail - 1])) rope[tail] = newTail(rope[tail - 1], rope[tail])
+    for ((direction, n) in motions) {
+        repeat(n) {
+            knots.head += direction.move
+            for (tail in 1 until knots.size) {
+                knots[tail] = knots[tail] + tailMove(knots[tail - 1], knots[tail])
             }
-            visited.add(rope.last().x to rope.last().y)
+            visited += knots.last()
         }
     }
 
     return visited
 }
 
-private fun Char.toDirection(): Point {
-    return when (this) {
-        'U', 'N' -> UP
-        'R', 'E' -> RIGHT
-        'D', 'S' -> DOWN
-        'L', 'W' -> LEFT
-        else -> error("could not transform $this to Point")
-    }
-}
+val Move.chebyshevDistance: Int get () = maxOf(abs(dx), abs(dy))
 
-fun newTail(head: Point, tail: Point): Point {
-    return tail.x + when {
-        head.x > tail.x -> 1
-        head.x < tail.x -> -1
-        else -> 0
-    } to tail.y + when {
-        head.y > tail.y -> 1
-        head.y < tail.y -> -1
-        else -> 0
-    }
+fun tailMove(head: Pos, tail: Pos): Move {
+    val tailToHead = head - tail
+    return if (tailToHead.chebyshevDistance > 1)
+        Move(tailToHead.dx.coerceIn(-1,1), tailToHead.dy.coerceIn(-1,1))
+    else
+        Move(0,0)
 }
-
-fun tooFar(tail: Point, head: Point): Boolean {
-    return abs(head.x - tail.x) > 1 || abs(head.y - tail.y) > 1
-}
-
 
 fun main() {
     val day = 9
@@ -71,23 +56,21 @@ fun main() {
     println(part2(input))
 }
 
-
-private typealias Distance = Int
-private typealias Point = Pair<Distance, Distance>
-private typealias Direction = Point
-
 private var <E> MutableList<E>.head: E
     get() = first()
     set(e) = run { set(0, e) }
 
-private val Point.x: Int get() = first
-private val Point.y: Int get() = second
+data class Pos(val x: Int, val y: Int){
+    override fun toString() = "(x:$x, y:$y)"
+}
+data class Move(val dx: Int, val dy: Int)
 
-private operator fun Point.plus(other: Point): Point = first + other.first to second + other.second
-private operator fun Point.minus(other: Point): Point = first - other.first to second - other.second
+private operator fun Pos.plus(move: Move): Pos = copy(x = x + move.dx, y = y + move.dy)
+private operator fun Pos.minus(other: Pos): Move = Move(this.x - other.x, this.y - other.y)
 
-val UP: Direction = +1 to 0
-val RIGHT: Direction = 0 to +1
-val DOWN: Direction = -1 to 0
-val LEFT: Direction = 0 to -1
-val ORIGIN: Point get() = 0 to 0
+enum class Direction(val move: Move) {
+    U(Move(0, 1)),
+    R(Move(1, 0)),
+    D(Move(0, -1)),
+    L(Move(-1, 0))
+}
