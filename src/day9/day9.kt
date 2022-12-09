@@ -17,10 +17,10 @@ fun part2(input: String): Int {
 
 fun visit(length: Int, input: String): MutableSet<Pair<Int, Int>> {
     val motions = parseInput(input)
-    val rope = mutableListOf<Pair<Int,Int>>()
-    repeat(length) { rope.add (0 to 0)}
+    val rope = mutableListOf<Pair<Int, Int>>()
+    repeat(length) { rope.add(0 to 0) }
 
-    val visited = mutableSetOf<Pair<Int,Int>>()
+    val visited = mutableSetOf<Pair<Int, Int>>()
 
     motions.forEach { (dir, dist) ->
         repeat(dist) {
@@ -30,13 +30,11 @@ fun visit(length: Int, input: String): MutableSet<Pair<Int, Int>> {
                 'U' -> rope[0] = rope[0].first to rope[0].second + 1
                 'D' -> rope[0] = rope[0].first to rope[0].second - 1
             }
-
             (1 until rope.size).forEach {
-                if (tooFar(rope[it], rope[it-1])) {
-                    rope[it] = newTailPos(rope[it-1], rope[it])
+                if (tooFar(rope[it], rope[it - 1])) {
+                    rope[it] = newTailPos(rope[it - 1], rope[it])
                 }
             }
-
             visited.add(rope.last().first to rope.last().second)
         }
     }
