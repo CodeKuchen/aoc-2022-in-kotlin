@@ -4,17 +4,11 @@ import inputTextOfDay
 import testTextOfDay
 import kotlin.math.abs
 
-fun parseInput(input: String): List<Pair<Direction, Int>> {
-    return input.lines().map { it[0].toDirection() to it.substringAfter(" ").toInt() }
-}
+fun parseInput(input: String): List<Pair<Direction, Distance>> =
+    input.lines().map { it[0].toDirection() to it.substringAfter(" ").toInt() }
 
-fun part1(input: String): Int {
-    return visit(2, input).size
-}
-
-fun part2(input: String): Int {
-    return visit(10, input).size
-}
+fun part1(input: String) = visit(2, input).size
+fun part2(input: String) = visit(10, input).size
 
 fun visit(ropeSize: Int, input: String): MutableSet<Point> {
 
@@ -23,12 +17,11 @@ fun visit(ropeSize: Int, input: String): MutableSet<Point> {
 
     val visited = mutableSetOf<Point>()
 
-    motions.forEach { (direction, steps) ->
-        repeat(steps) {
-            rope.head += direction
+    motions.forEach { (dir, dist) ->
+        repeat(dist) {
+            rope.head += dir
             (1 until rope.size).forEach { tail ->
-                if (tooFar(rope[tail], rope[tail - 1]))
-                    rope[tail] = newTail(rope[tail - 1], rope[tail])
+                if (tooFar(rope[tail], rope[tail - 1])) rope[tail] = newTail(rope[tail - 1], rope[tail])
             }
             visited.add(rope.last().x to rope.last().y)
         }
@@ -79,7 +72,8 @@ fun main() {
 }
 
 
-private typealias Point = Pair<Int, Int>
+private typealias Distance = Int
+private typealias Point = Pair<Distance, Distance>
 private typealias Direction = Point
 
 private var <E> MutableList<E>.head: E
