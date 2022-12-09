@@ -3,8 +3,8 @@ package day9
 import inputTextOfDay
 import testTextOfDay
 
-fun parseInput(input: String): List<Pair<String, Int>> {
-    return input.lines().map { it.split(" ").let { (dir, dist) -> dir to dist.toInt() } }
+fun parseInput(input: String): List<Pair<Char, Int>> {
+    return input.lines().map { it[0] to it.substringAfter(" ").toInt() }
 }
 
 fun part1(input: String): Int {
@@ -25,10 +25,10 @@ fun visit(length: Int, input: String): MutableSet<Pair<Int, Int>> {
     motions.forEach { (dir, dist) ->
         repeat(dist) {
             when (dir) {
-                "R" -> rope[0] = rope[0].first + 1 to rope[0].second
-                "L" -> rope[0] = rope[0].first - 1 to rope[0].second
-                "U" -> rope[0] = rope[0].first to rope[0].second + 1
-                "D" -> rope[0] = rope[0].first to rope[0].second - 1
+                'R' -> rope[0] = rope[0].first + 1 to rope[0].second
+                'L' -> rope[0] = rope[0].first - 1 to rope[0].second
+                'U' -> rope[0] = rope[0].first to rope[0].second + 1
+                'D' -> rope[0] = rope[0].first to rope[0].second - 1
             }
 
             (1 until rope.size).forEach {
