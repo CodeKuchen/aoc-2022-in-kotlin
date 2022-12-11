@@ -50,7 +50,6 @@ fun monkeyBusiness(input: String, rounds: Int, managedWorries: (ULong, UInt) -> 
             monkeyItems[monkey].clear()
         }
     }
-
     return monkeyInspections.sortedDescending().take(2).let { (a,b) -> a * b }
 }
 
