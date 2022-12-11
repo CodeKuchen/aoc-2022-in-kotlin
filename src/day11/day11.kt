@@ -4,36 +4,41 @@ import inputTextOfDay
 import testTextOfDay
 import kotlin.math.floor
 
+fun part1(input: String): ULong {
+    return monkeyBusiness(input, 20, ::reduceWorryLevels)
+}
+fun part2(input: String): ULong {
+    return monkeyBusiness(input, 10000, ::manageWorryLevels)
+}
 
-fun part1(input: String): Int {
+fun monkeyBusiness(input: String, rounds: Int, managedWorries: (ULong, UInt) -> ULong): ULong {
     val monkeys = parseMonkeys(input)
-    val monkeyItems = monkeys.map { monkey -> monkey.first().split(", ").map { it.toInt() }.toMutableList() }
-    val monkeyInspections = MutableList(monkeys.size) { 0 }
+    val monkeyItems = monkeys.map { monkey -> monkey.first().split(", ").map { it.toULong() }.toMutableList() }
+    val monkeyInspections = MutableList(8) { 0UL }
 
-    repeat(20) {
+    val monkeyDivisor = monkeys.map{ monkey -> monkey[2].toUInt() }.reduce { a, b -> a * b }
+
+    repeat(rounds) {
         for (monkey in monkeys.indices) {
-            monkeyItems[monkey].forEach { worryLevel ->
-                monkeyInspections[monkey] = monkeyInspections[monkey] + 1
-                val (startingItems, operation, tests, testTrue, testFalse) = monkeys[monkey]
+            monkeyItems[monkey].forEach {  worryLevel ->
+                monkeyInspections[monkey] = monkeyInspections[monkey] + 1UL
+                val (_, operation, tests, testTrue, testFalse) = monkeys[monkey]
                 val (operator, operand) = operation.split(" ")
 
-                // during inspection
                 val worryLevelDuringInspection = when (operator) {
-                    "*" -> worryLevel * when (operand){
+                    "*" -> worryLevel * when (operand) {
                         "old" -> worryLevel
-                        else -> operand.toInt()
+                        else -> operand.toULong()
                     }
-                    else -> worryLevel + when (operand){
+                    else -> worryLevel + when (operand) {
                         "old" -> worryLevel
-                        else -> operand.toInt()
+                        else -> operand.toULong()
                     }
                 }
 
-                // after inspection but before test my worry level
-                val worryLevelAfterInspection = floor(worryLevelDuringInspection / 3.0).toInt()
+                val worryLevelAfterInspection = managedWorries(worryLevelDuringInspection, monkeyDivisor)
 
-                // test worry level and throw item accordingly
-                when (worryLevelAfterInspection % tests.toInt() == 0) {
+                when (worryLevelAfterInspection % tests.toUInt() == 0UL) {
                     true -> {
                         monkeyItems[testTrue.toInt()].add(worryLevelAfterInspection)
                     }
@@ -46,64 +51,14 @@ fun part1(input: String): Int {
         }
     }
 
-    //println(monkeys)
-    //println(monkeyItems)
-    return monkeyInspections.sortedDescending().take(2).let { (a,b) -> a*b }
-}
-
-fun part2(input: String): ULong {
-
-    val monkeys = parseMonkeys(input)
-
-    val monkeyItems = List(8) { mutableListOf<ULong>() }
-    val monkeyInspections = MutableList(8) { 0UL }
-    var monkeyDivisor = 1U
-
-    monkeys.forEachIndexed { index, (startingItems, operation, test, testTrue, testFalse) ->
-        val worryLevels = startingItems.split(", ").map { it.toULong() }
-        worryLevels.forEach { monkeyItems[index].add(it) }
-        monkeyDivisor *= test.toUInt()
-    }
-
-    repeat(10000) {
-
-        for (monkey in 0 .. 7) {
-            monkeyItems[monkey].forEach {  level ->
-                monkeyInspections[monkey] = monkeyInspections[monkey] + 1UL
-                val (startingItems, operation, tests, testTrue, testFalse) = monkeys[monkey]
-                val (operator, operand) = operation.split(" ")
-
-                // during inspection
-                val levelIncreased = when (operator) {
-                    "*" -> level * when (operand) {
-                        "old" -> level
-                        else -> operand.toULong()
-                    }
-                    else -> level + when (operand) {
-                        "old" -> level
-                        else -> operand.toULong()
-                    }
-                }
-
-                // after inspection but before test my worry level
-                val levelManaged = levelIncreased % monkeyDivisor
-
-                // test worry level
-                when (levelManaged % tests.toUInt() == 0UL) {
-                    true -> {
-                        monkeyItems[testTrue.toInt()].add(levelManaged)
-                    }
-                    false -> {
-                        monkeyItems[testFalse.toInt()].add(levelManaged)
-                    }
-                }
-            }
-            monkeyItems[monkey].clear()
-        }
-    }
-
     return monkeyInspections.sortedDescending().take(2).let { (a,b) -> a * b }
 }
+
+private fun reduceWorryLevels(worryLevel: ULong, monkeyDivisor: UInt) =
+    floor(worryLevel.toDouble()  / 3.0).toULong()
+
+private fun manageWorryLevels(worryLevel: ULong, monkeyDivisor: UInt) =
+    worryLevel % monkeyDivisor
 
 private fun parseMonkeys(input: String) = input.lines().chunked(7) { monkey ->
     monkey.drop(1).mapNotNull {
@@ -127,8 +82,8 @@ fun main() {
 
     println(part1(test))
     println(part1(input))
-    check(part1(test) == 10605)
-    check(part1(input) == 57838)
+    check(part1(test) == 10605UL)
+    check(part1(input) == 57838UL)
 
     println(part2(test))
     println(part2(input))
