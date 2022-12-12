@@ -28,14 +28,16 @@ fun main() {
 
 }
 
-fun shortestDistance(start: Set<Cell>, goal: Cell, maze: Maze, neighbours: Map<Cell, List<Cell>>, visited: Set<Cell>, length: Int): Int {
+fun shortestDistance(starts: Set<Cell>, goal: Cell, maze: Maze, neighbours: Map<Cell, List<Cell>>, visited: Set<Cell>, length: Int): Int {
     val nextStart = mutableSetOf<Cell>()
     val nextLength = length + 1
-    val nextVisited = visited union start
+    val nextVisited = visited union starts
 
-    start.forEach { s ->
-        if (goal in neighbours[s]!!) return nextLength
-        nextStart.addAll(neighbours[s]!!)
+    if (starts.isEmpty()) error("(${goal.first}, ${goal.second}) not reachable")
+
+    starts.forEach { cell ->
+        if (goal in neighbours[cell]!!) return nextLength.also{ println(starts.size)}
+        nextStart.addAll(neighbours[cell]!!)
     }
     return shortestDistance(nextStart, goal, maze, neighbours, nextVisited, nextLength)
 }
