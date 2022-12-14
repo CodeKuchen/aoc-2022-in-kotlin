@@ -12,34 +12,40 @@ typealias Cell = Pair<Int, Int>
 
 fun main() {
     val maze = createMazeOfInts(input)//.also { printMaze(it) }
-    val start = findInMaze(input, 'S')//.also { println("Start: ${it.first} to ${it.second}") }
-    val goal = findInMaze(input, 'E')//.also { println("End: ${it.first} to ${it.second}") }
+    val start = findSingleInMaze(input, 'S')//.also { println("Start: ${it.first} to ${it.second}") }
+    val goal = findSingleInMaze(input, 'E')//.also { println("End: ${it.first} to ${it.second}") }
     val allNeighbours = createListsOfNeighbours(maze)
     val reachable = createListsOfReachableNeighbours(maze, allNeighbours)
 
     // part1
-    val distance: Int = shortestDistance(setOf(start), goal, maze, reachable, setOf(), 0)
+    val distance: Int = distanceOfShortestPath(setOf(start), goal, reachable, setOf(), 0)
     println(distance)
 
     // part2
-    val possibleStarts = findAllInMaze(input, 'a').toMutableSet().also{ it.add(start) }
-    val minDistance: Int = shortestDistance(possibleStarts, goal, maze, reachable, setOf(), 0)
+    val possibleStarts = findAllInMaze(input, 'a') union setOf(start)
+    val minDistance: Int = distanceOfShortestPath(possibleStarts, goal, reachable, setOf(), 0)
     println(minDistance)
 
 }
 
-fun shortestDistance(starts: Set<Cell>, goal: Cell, maze: Maze, neighbours: Map<Cell, List<Cell>>, visited: Set<Cell>, length: Int): Int {
-    val nextStart = mutableSetOf<Cell>()
-    val nextLength = length + 1
-    val nextVisited = visited union starts
+fun distanceOfShortestPath(starts: Set<Cell>, goal: Cell, neighbours: Map<Cell, List<Cell>>, visited: Set<Cell>, length: Int): Int {
 
-    if (starts.isEmpty()) error("(${goal.first}, ${goal.second}) not reachable")
+    fun distanceOfShortestPath(starts: Set<Cell>, visited: Set<Cell>, length: Int): Int {
+        val nextStart = mutableSetOf<Cell>()
+        val nextLength = length + 1
+        val nextVisited = visited union starts
 
-    starts.forEach { cell ->
-        if (goal in neighbours[cell]!!) return nextLength.also{ println(starts.size)}
-        nextStart.addAll(neighbours[cell]!!)
+        if (starts.isEmpty()) error("(${goal.first}, ${goal.second}) not reachable")
+
+        starts.forEach { cell ->
+            val cellNeighbours = neighbours.getOrDefault(cell, emptyList())
+            if (goal in cellNeighbours) return nextLength.also{ println(starts.size)}
+            nextStart.addAll(cellNeighbours)
+        }
+        return distanceOfShortestPath(nextStart, nextVisited, nextLength)
     }
-    return shortestDistance(nextStart, goal, maze, neighbours, nextVisited, nextLength)
+
+    return distanceOfShortestPath(starts, visited, length)
 }
 
 fun createListsOfNeighbours(maze: Maze): Map<Cell, List<Cell>> {
@@ -76,18 +82,13 @@ fun createListsOfReachableNeighbours(maze: Maze, neighbours: Map<Cell, List<Cell
 private fun neighbourIsReachable(currentCell: Cell, neighbour: Cell, maze: Maze) =
     maze[currentCell.first][currentCell.second] >= maze[neighbour.first][neighbour.second] - 1
 
-fun findInMaze(input: String, char: Char): Cell {
-    val rows = input.lines()
-    rows.forEachIndexed { r, row ->
-        for (c in row.indices) {
-            if (rows[r][c] == char) return r to c
-        }
-    }
-    return -1 to -1
+
+fun findSingleInMaze(input: String, char: Char): Cell {
+    return findAllInMaze(input, char).single()
 }
 
-fun findAllInMaze(input: String, char: Char): List<Cell> {
-    val result = mutableListOf<Cell>()
+fun findAllInMaze(input: String, char: Char): Set<Cell> {
+    val result = mutableSetOf<Cell>()
     val rows = input.lines()
     rows.forEachIndexed { r, row ->
         for (c in row.indices) {
